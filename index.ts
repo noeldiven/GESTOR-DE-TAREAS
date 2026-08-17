@@ -19,6 +19,24 @@ let nombre_sistema:string = "     Gestor de Tareas";
 let version_sistema:number = 3;
 let usuario:string = "Noel";
 
+const markCompleted = (id: number): void => {
+    const tarea = lista_tareas.find((tarea) => tarea.id === id);
+    if (tarea) {
+        tarea.estado = true;
+        console.log(`La tarea "${tarea.nombre}" ha sido completada.`);
+    } else {
+        console.log("No se encontró una tarea con ese ID.");
+    }
+};
+
+const filterPending = (): Tarea[] => {
+    return lista_tareas.filter((tarea) => tarea.estado === false);
+};
+
+const filterCompleted = (): Tarea[] => {
+    return lista_tareas.filter((tarea) => tarea.estado === true);
+};
+
 console.log("==================================");
 console.log(nombre_sistema + "  V:" + version_sistema);
 console.log("       ¡Bienvenido, " + usuario + "!");
@@ -44,11 +62,23 @@ const agregarTarea = (nuevaTarea: string): void => {
 }
 
 const listarTareas = (): void => {
-    console.log("....Tareas Pendientes....");
+    console.log("....Tareas....");
+    const tareasFormateadas = lista_tareas.map((task) => {
+        const { id, nombre, estado } = task;
+        return `Tarea: ${id} - ${nombre} - Estado: ${
+            estado ? "Completada" : "Pendiente"
+        }`;
+    });
+    tareasFormateadas.forEach((tarea) => {
+        console.log(tarea);
+    });
+};
+
+   /* console.log("....Tareas Pendientes....");
     for(let i = 0; i < lista_tareas.length; i++){
         console.log("tarea: " + lista_tareas[i].id + ": " + lista_tareas[i].nombre + " - Estado: " + (lista_tareas[i].estado ? "Completada" : "Pendiente"));
     }
-}
+}*/
 
 const eliminarUltimaTarea = (): void => {
     if(lista_tareas.length > 0){
@@ -60,34 +90,78 @@ const eliminarUltimaTarea = (): void => {
     }
 };
 
-while(opcion != 4){
+while(opcion != 7){
     console.log("==================================");
     console.log("     Gestor de Tareas");
-    console.log("Hola " + answer + "! elije una opción:");
+    console.log("Hola " + answer + "! elige una opción:");
     console.log("1. Agregar tarea");
     console.log("2. Ver tareas");
     console.log("3. Eliminar Última tarea");
-    console.log("4. Salir");
+    console.log("4. Marcar tarea como completada");
+    console.log("5. Ver tareas pendientes");
+    console.log("6. Ver tareas completadas");
+    console.log("7. Salir");
     console.log("==================================");
+
     opcion = parseInt(await rl.question("Elige una opción: "));
+
     if(opcion == 1){
+
         console.log("....Agregar tarea....");
-        let tarea_tmp = await rl.question("ingresa la tarea: ");
+        let tarea_tmp = await rl.question("Ingresa la tarea: ");
         agregarTarea(tarea_tmp);
-    }
-    else if(opcion == 2){
+
+    } else if(opcion == 2){
+
         listarTareas();
-    }
-    else if(opcion == 3){
+
+    } else if(opcion == 3){
+
         console.log("....Eliminar última tarea....");
         eliminarUltimaTarea();
-    }
-    else if(opcion == 4){
+
+    } else if(opcion == 4){
+
+        console.log("....Marcar tarea como completada....");
+
+        const id = parseInt(
+            await rl.question("Ingresa el ID de la tarea: ")
+        );
+
+        markCompleted(id);
+
+    } else if(opcion == 5){
+
+        console.log("....Tareas pendientes....");
+
+        const tareasPendientes = filterPending();
+
+        tareasPendientes.forEach((tarea) => {
+            console.log(
+                `Tarea: ${tarea.id} - ${tarea.nombre} - Estado: Pendiente`
+            );
+        });
+
+    } else if(opcion == 6){
+
+        console.log("....Tareas completadas....");
+
+        const tareasCompletadas = filterCompleted();
+
+        tareasCompletadas.forEach((tarea) => {
+            console.log(
+                `Tarea: ${tarea.id} - ${tarea.nombre} - Estado: Completada`
+            );
+        });
+
+    } else if(opcion == 7){
+
         console.log("Saliendo del programa...");
-        opcion = 4;
-    }
-    else{
+
+    } else {
+
         console.log("Opción inválida. Por favor, elige una opción válida.");
+
     }
 }
 
