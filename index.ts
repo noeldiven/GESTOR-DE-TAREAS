@@ -15,13 +15,43 @@ console.log(nombre_sistema + "  V:" + version_sistema);
 console.log("       ¡Bienvenido, " + usuario + "!");
 console.log("==================================");
 
-
-
 const answer = await rl.question("¿Cuál es tu nombre? ");
 console.log(`Hola, ${answer}!`);
 
 let opcion:number = 0;
 let lista_tareas:string[] = [];
+
+interface Tarea {
+    id: number;
+    nombre: string;
+}
+
+const saveToDB = (tarea: Tarea): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log(`La tarea "${tarea.nombre}" fue guardada en la base de datos.`);
+            resolve();
+        }, 2000);
+    });
+};
+
+
+const addTask = async (title: string): Promise<void> => {
+    try {
+        if (title.trim() === "") {
+            throw new Error("El título de la tarea no puede estar vacío.");
+        }
+        const tarea: Tarea = {
+            id: lista_tareas.length + 1,
+            nombre: title
+        };
+        await saveToDB(tarea);
+        lista_tareas.push(title);
+        console.log(`Tarea "${title}" agregada con éxito.`);
+    } catch (error) {
+        console.log("Error:", (error as Error).message);
+    }
+};
 
 while(opcion != 4){
     console.log("==================================");
@@ -35,8 +65,8 @@ while(opcion != 4){
     opcion = parseInt(await rl.question("Elige una opción: "));
     if(opcion == 1){
         console.log("....Agregar tarea....");
-        let tarea_tmp = await rl.question("ingresa la tarea: ");
-        lista_tareas.push(tarea_tmp);
+        const tarea_tmp = await rl.question("Ingresa la tarea: ");
+        await addTask(tarea_tmp);
     }
     else if(opcion == 2){
         console.log("....Tareas Pendientes....");
